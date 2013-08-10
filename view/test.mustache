@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<title>{{title}}</title>
+</head>
+<body>
+	<h1>{{title}}</h1>
+	<form method="post">
+		<input name="test_input">
+		<button type="submit">Test POST</button>
+	</form>
+	{{#output}}
+		<pre id="output">{{output}}</pre>
+	{{/output}}
+	{{#post}}
+		<code>{{post}}</code> was just posted
+	{{/post}}
+</body>
+</html>

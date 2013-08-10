@@ -1,9 +1,13 @@
+import sys
+from os.path import dirname
 from cgi import escape as e
+from pprint import pformat as pp
 
 class App:
 	headers = []
 	status = "200 OK"
 	request = {}
+	paths = { "root_dir": dirname(dirname(__file__)) }
 
 
 	@classmethod
@@ -12,10 +16,8 @@ class App:
 		cls.handle_wsgi_reboot(env)
 		cls.build_request_obj(env)
 
-		body = cls.view('test', {
-				"foo":  'bar',
-				"post": e(cls.fetch('post', 'foo', '')),
-			});
+		from classes.route import Route
+		body = Route.init()
 
 		cls.add_header('Content-type', 'text/html')
 		cls.add_header('Content-Length', str(len(body)))
@@ -37,14 +39,17 @@ class App:
 			os.kill(os.getpid(), signal.SIGINT)
 
 
-	@staticmethod
-	def view(file, data):
-		""" Render a view in /views """
-		import os
-		from string import Template
-		root_dir = os.path.dirname(__file__)
-		v = Template(open(root_dir +'/../view/'+ file +'.html').read())
-		return v.substitute(data)
+	@classmethod
+	def stache(cls, file, data):
+		""" Render a mustache template in /views """
+		import pystache
+		path = cls.paths.get('root_dir') +'/view/'+ file +'.mustache'
+		return str(pystache.render(open(path).read(), data))
+
+
+	@classmethod
+	def get_url(cls):
+		return cls.request.get('parsed')
 
 
 	@classmethod
